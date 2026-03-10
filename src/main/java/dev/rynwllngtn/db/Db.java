@@ -1,5 +1,7 @@
 package dev.rynwllngtn.db;
 
+import dev.rynwllngtn.exceptions.database.DatabaseException;
+
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.sql.*;
@@ -18,7 +20,7 @@ public class Db {
                 connection = DriverManager.getConnection(url, properties);
             }
             catch (SQLException e) {
-                throw new DbException(e.getMessage());
+                throw new DatabaseException(e.getMessage());
             }
         }
         return connection;
@@ -31,7 +33,7 @@ public class Db {
                 connection.close();
             }
             catch (SQLException e) {
-                throw new DbException(e.getMessage());
+                throw new DatabaseException(e.getMessage());
             }
         }
     }
@@ -44,7 +46,7 @@ public class Db {
             return properties;
         }
         catch (IOException e) {
-            throw new DbException(e.getMessage());
+            throw new DatabaseException(e.getMessage());
         }
     }
 
@@ -55,7 +57,7 @@ public class Db {
                 statement.close();
             }
             catch (SQLException e) {
-                throw new DbException(e.getMessage());
+                throw new DatabaseException(e.getMessage());
             }
         }
     }
@@ -67,7 +69,7 @@ public class Db {
                 resultSet.close();
             }
             catch (SQLException e) {
-                throw new DbException(e.getMessage());
+                throw new DatabaseException(e.getMessage());
             }
         }
     }
