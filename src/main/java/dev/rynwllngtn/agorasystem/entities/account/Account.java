@@ -18,7 +18,7 @@ import java.util.UUID;
 @Entity
 @Table(name = "account")
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
-@DiscriminatorColumn(name = "accountType", discriminatorType = DiscriminatorType.STRING)
+@DiscriminatorColumn(name = "account_type", discriminatorType = DiscriminatorType.STRING)
 public abstract class Account implements Serializable {
 
     @Serial
@@ -31,20 +31,20 @@ public abstract class Account implements Serializable {
     protected UUID id;
 
     @ManyToOne
-    @JoinColumn( nullable = false)
+    @JoinColumn(nullable = false)
     protected User holder;
 
     @Column(precision = 9, scale = 2)
     protected BigDecimal balance;
 
-    @Column(precision = 9, scale = 2)
+    @Column(name = "transfer_limit", precision = 9, scale = 2)
     protected BigDecimal transferLimit;
 
-    @Column(precision = 9, scale = 2)
+    @Column(name = "transfer_limit_cap", precision = 9, scale = 2)
     protected BigDecimal transferLimitCap;
 
     @Enumerated(EnumType.STRING)
-    @Column(length = 16, insertable=false, updatable=false)
+    @Column(name = "account_type", length = 16, insertable=false, updatable=false)
     protected AccountType accountType;
 
     public Account(User holder) {

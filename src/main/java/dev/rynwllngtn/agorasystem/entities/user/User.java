@@ -34,10 +34,10 @@ public class User implements Serializable {
     protected String name;
     protected String email;
 
-    @Column(name = "birthDate", nullable = false)
+    @Column(name = "birth_date", nullable = false)
     protected Date birthDate;
 
-    @Column(nullable = false)
+    @Column(name = "is_active", nullable = false)
     protected boolean isActive = true;
 
     public User(String cpf, String password) {

@@ -4,8 +4,7 @@
 ![Status](https://img.shields.io/badge/Status-EM%20EVOLUÇÂO-success?style=for-the-badge)
 ![Version](https://img.shields.io/badge/version-v0.2.0-blue?style=for-the-badge)
 
-O Agora System é um projeto de simulação bancária. Ele é um projeto para os meus estudos de programação e a intenção e evoluí-lo junto comigo.
-
+O Agora System é um projeto de simulação bancária. Ele é um projeto para os meus estudos de programação e a intenção e evoluí-lo junto comigo.  
 O objetivo aqui não é criar um banco real, mas sim colocar em prática os conceitos e boas práticas de código à medida que os domino.
 
 ---
@@ -19,20 +18,20 @@ O objetivo aqui não é criar um banco real, mas sim colocar em prática os conc
 
 Nesta fase do projeto, o foco não foi a interface gráfica, mas sim a robustez do lado do servidor. O desenvolvimento desta versão ajudou a consolidar:
 
-- **Padrão DAO:** Separação entre os objetos e a estrutura de banco de dados, utilizando interfaces (`UserDao`, `AccountDao`).
-- **Padrão Factory:** Utilização do `DaoFactory` para instanciar as implementações de acesso a dados, adicionando uma camada de abstração sobre como os objetos são criados.
-- **JDBC Puro:** Compreensão sobre `Connection`, `PreparedStatement` e extração de dados com `ResultSet`, incluindo o mapeamento objeto-relacional manual.
-- **Gestão de Identidade:** Implementação de um cache manual utilizando `HashMap` durante a extração de dados, evitando a duplicação de objetos e garantindo a identidade correta do usuário.
-- **Tratamento de Exceções Blindado:** Captura de `SQLException` e conversão para exceções personalizadas (`DatabaseException`), protegendo a aplicação contra vazamento de detalhes da infraestrutura.
+- **Spring Boot & Injeção de Dependências:** Substituição de instanciações manuais pelo controle do Spring (`@Autowired`, `@Service`, `@RestController`).
+- **Spring Data JPA:** Eliminação de consultas SQL manuais e DAOs abstratos através da implementação de `Repositories`.
+- **Design de API RESTful:** Criação de *Controllers* para expor os dados da aplicação via rotas HTTP (ex: `GET /users`).
+- **Arquitetura em Camadas:** Divisão de responsabilidades entre *Controllers*, *Services*, *Repositories* e *Entities*.
 
 ---
 
 ## Funcionalidades Atuais
 
-- CRUD completo para Usuários.
-- CRUD completo para Contas (Corrente e Poupança), lidando com Chaves Estrangeiras.
-- Utilitários dinâmicos de instanciação de objetos.
-- Script de teste de integração na classe `Main`.
+- **API REST:** Métodos para listagem e consulta de Usuários e Contas.
+- **Mapeamento Relacional:** Entidades `User` e `Account` mapeadas com herança `SINGLE_TABLE`.
+- **Database Seeding:** Preenchimento automático do banco de dados para testes utilizando `CommandLineRunner`.
+
+---
 
 ## Como testar a conexão?
 
@@ -42,14 +41,14 @@ Caso queira rodar o código e ver a comunicação com o banco na sua máquina:
    ```bash
    git clone https://github.com/rynwllngtn/agora-system-api.git
    ```
-2. Faça o download das bibliotecas usando:
+2. Renomeie o arquivo `application.example.properties` para `application.properties`.
+3. Insira as suas credenciais do MySQL local e o nome da base de dados no novo arquivo.
+4. Rode a aplicação usando o Maven Wrapper na raiz do projeto:
+   ```bash
+   ./mvnw spring-boot:run
    ```
-   mvn clean install
-   ```
-   Ou use as ferramentas da sua IDE (como no IntelliJ).
-3. Renomeie o arquivo `db.example.properties` para `db.properties` e insira as suas credenciais do MySQL local.
-
-4. Compile e execute a classe Main (que contém o script de teste de integração).
+   ou inicie a classe Main diretamente pela sua IDE (como no IntelliJ).
+5. Acesse `http://localhost:8080/users` no seu navegador ou Postman para ver o retorno em JSON da API.
 
 ---
 

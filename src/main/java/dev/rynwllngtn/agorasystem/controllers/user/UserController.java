@@ -1,10 +1,8 @@
-package dev.rynwllngtn.agorasystem;
+package dev.rynwllngtn.agorasystem.controllers.user;
 
 import dev.rynwllngtn.agorasystem.entities.user.User;
-import dev.rynwllngtn.agorasystem.repositories.user.UserRepository;
 import dev.rynwllngtn.agorasystem.services.user.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -16,7 +14,7 @@ import java.util.UUID;
 
 @RestController
 @RequestMapping(value = "/users")
-public class UserResource {
+public class UserController {
 
     @Autowired
     private UserService userService;

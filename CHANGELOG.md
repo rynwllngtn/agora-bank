@@ -5,6 +5,14 @@ Todas as mudanças notáveis na API do **Agora System** serão documentadas nest
 O formato é baseado no [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/).
 
 ---
+## [Unreleased]
+
+### Added
+- Implementado classe configuração `DatabaseSeeder`, instanciado ao iniciar o sistema.
+- Adicionado `controller`, `repository` e `service` inicial para entidade Account.
+- Adicionado `controller`, `repository` e `service` inicial para entidade User.
+
+---
 
 ## [0.2.0] - 2026-03-12
 
