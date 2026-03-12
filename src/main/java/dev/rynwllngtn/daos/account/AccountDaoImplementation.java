@@ -118,7 +118,8 @@ public class AccountDaoImplementation implements AccountDao {
 
         try {
             statement = connection.prepareStatement("""
-                        SELECT acc.*, us.* FROM account AS acc
+                        SELECT acc.*, us.Id AS UserId, us.Cpf, us.Password, us.Name, us.Email, us.BirthDate, us.IsActive
+                        FROM account AS acc
                         INNER JOIN user AS us
                         ON acc.Holder = us.Id
                         WHERE acc.Id = ?
@@ -128,7 +129,7 @@ public class AccountDaoImplementation implements AccountDao {
             resultSet = statement.executeQuery();
 
             if (resultSet.next()) {
-                User user = UserUtil.instantiateUser(resultSet);
+                User user = UserUtil.instantiateUser(resultSet, "UserId");
                 return AccountUtil.instantiateAccount(resultSet, user);
             }
 
