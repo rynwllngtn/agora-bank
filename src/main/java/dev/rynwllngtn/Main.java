@@ -1,49 +1,36 @@
 package dev.rynwllngtn;
 
-import dev.rynwllngtn.daos.DaoFactory;
-import dev.rynwllngtn.daos.account.AccountDao;
-import dev.rynwllngtn.daos.user.UserDao;
 import dev.rynwllngtn.entities.account.Account;
 import dev.rynwllngtn.entities.account.accounts.AccountChecking;
 import dev.rynwllngtn.entities.user.User;
-import dev.rynwllngtn.utils.DatabaseUtil;
-
-import java.math.BigDecimal;
-import java.util.UUID;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.EntityManagerFactory;
+import jakarta.persistence.Persistence;
 
 public class Main {
 
     static void main() {
 
-        User newUser = new User("12312312312", "123123123");
-        newUser.setId(UUID.randomUUID());
-        Account newAccount = new AccountChecking(newUser);
-        newAccount.setId(UUID.randomUUID());
+        EntityManagerFactory factory = Persistence.createEntityManagerFactory("agorasystemdb");
+        EntityManager manager = factory.createEntityManager();
 
-        UserDao userDao = DaoFactory.createUserDao();
-        AccountDao accountDao = DaoFactory.createAccountDao();
+        manager.getTransaction().begin();
 
-        //Insert
-        userDao.insert(newUser);
-        accountDao.insert(newAccount);
+        User user = new User("11111111111","12345678");
+        manager.persist(user);
 
-        //Update
-        newAccount.setBalance(new BigDecimal("100000.00"));
-        newAccount.setTransferLimit(newAccount.getBalance());
-        newAccount.setTransferLimitCap(newAccount.getBalance());
-        accountDao.update(newAccount);
+        Account accountChecking = new AccountChecking(user);
+        manager.persist(accountChecking);
 
-        //Find by id
-        IO.println(accountDao.findById(newAccount.getId()));
+        Account fromDbAccount = manager.find(Account.class, accountChecking.getId());
+        IO.println(fromDbAccount + "\n\n");
+        manager.remove(fromDbAccount);
 
-        //Find all
-        accountDao.findAll().stream().forEach(account -> IO.println(account));
+        User fromDbUser = manager.find(User.class, user.getId());
+        IO.println(user);
+        manager.remove(fromDbUser);
 
-        //Delete
-        accountDao.deleteById(newAccount.getId());
-        userDao.deleteById(newUser.getId());
-
-        DatabaseUtil.closeConnection();
+        manager.getTransaction().commit();
     }
 
 }

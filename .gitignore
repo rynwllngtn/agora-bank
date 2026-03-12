@@ -40,4 +40,4 @@ build/
 .DS_Store
 
 # Propriedades do banco de dados
-db.properties
+src/main/resources/META-INF/persistence.xml

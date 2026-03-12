@@ -2,6 +2,7 @@ package dev.rynwllngtn.entities.account;
 
 import dev.rynwllngtn.entities.user.User;
 import dev.rynwllngtn.enums.account.AccountType;
+import jakarta.persistence.*;
 import lombok.*;
 
 import java.io.Serial;
@@ -14,17 +15,29 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
+@Entity
+@Table(name = "account")
+@Inheritance(strategy = InheritanceType.SINGLE_TABLE)
+@DiscriminatorColumn(name = "AccountType", discriminatorType = DiscriminatorType.STRING)
 public abstract class Account implements Serializable {
 
     @Serial
     private static final long serialVersionUID = -5407895841045304833L;
 
     @EqualsAndHashCode.Include
+    @Id
+    @Column(name = "Id")
     protected UUID id = UUID.randomUUID();
+
+    @ManyToOne
+    @JoinColumn(name = "holder")
     protected User holder;
     protected BigDecimal balance;
     protected BigDecimal transferLimit;
     protected BigDecimal transferLimitCap;
+
+    @Enumerated(EnumType.STRING)
+    @Column(insertable=false, updatable=false)
     protected AccountType accountType;
 
     public Account(User holder) {

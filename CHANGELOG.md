@@ -5,8 +5,24 @@ Todas as mudanças notáveis na API do **Agora System** serão documentadas nest
 O formato é baseado no [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/).
 
 ---
+## [0.1.1] - 2026-03-12
 
-## [1.0.0] - 2026-03-11
+### Changed
+- Configuração do Hibernate via `persistence.xml`, substituindo o arquivo `db.properties`.
+- Mapeamento utilizando anotações JPA (`@Entity`, `@Table`, `@Column`, etc.) nas entidades.
+- Implementação de herança `SINGLE_TABLE` para a tipos de contas (`Account`, `AccountChecking`, `AccountSaving`).
+- Template `persistence.example.xml` adicionado para a gestão de credenciais.
+
+## Removed
+- Exclusão dos arquivos `db.properties` e `db.example.properties`.
+- Remoção de todo o código **JDBC puro** (incluindo `Connection`, `PreparedStatement` e `ResultSet`).
+- Remoção das implementações dos DAOs (`UserDaoImplementation` e `AccountDaoImplementation`).
+- Remoção das classes utilitárias (`DatabaseUtil`, `UserUtil`, `AccountUtil`), pois o Hibernate passa a fazer as conexões de forma nativa.
+
+# Fixed
+- Corrigido versionamento errado em `README` e `CHANGELOG`
+
+## [0.1.0] - 2026-03-11
 
 ### Added
 - Implementação completa dos métodos CRUD utilizando **JDBC puro**.

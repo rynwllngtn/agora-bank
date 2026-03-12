@@ -3,12 +3,16 @@ package dev.rynwllngtn.entities.account.accounts;
 import dev.rynwllngtn.entities.account.Account;
 import dev.rynwllngtn.entities.user.User;
 import dev.rynwllngtn.enums.account.AccountType;
+import jakarta.persistence.DiscriminatorValue;
+import jakarta.persistence.Entity;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 
 import java.io.Serial;
 
 @NoArgsConstructor
+@Entity
+@DiscriminatorValue("SAVING")
 public class AccountSaving extends Account {
 
     @Serial
