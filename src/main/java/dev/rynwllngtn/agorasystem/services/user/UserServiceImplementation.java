@@ -36,4 +36,19 @@ public class UserServiceImplementation implements UserService {
         userRepository.deleteById(id);
     }
 
+    @Override
+    public User update(UUID id, User userData) {
+        User user = userRepository.getReferenceById(id);
+        UpdateData(user, userData);
+        return userRepository.save(user);
+    }
+
+    private void UpdateData(User user, User userData) {
+        user.setPassword(userData.getPassword());
+        user.setName(userData.getName());
+        user.setEmail(userData.getEmail());
+        user.setBirthDate(userData.getBirthDate());
+        user.setActive(userData.isActive());
+    }
+
 }
