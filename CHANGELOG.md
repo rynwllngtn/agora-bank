@@ -6,17 +6,26 @@ O formato é baseado no [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.
 
 ---
 
-## [Unreleased]
+## [0.3.2] 2026-04-08
 
 ### Added
+- Endpoints específicos de domínio (POST `/{id}/deposit` e POST `/{id}/withdraw`) no `AccountController`, substituindo atualizações genéricas.
+- Endpoints lógicos no `UserController` (PATCH `/{id}/deactivate` e PATCH `/{id}/reactivate`).
+- Criado o Enum `UserStatus` (`ACTIVE`, `CLOSED`, `SUSPENDED`) para controle de exclusão lógica e ciclo de vida do usuário.
+- Criadas `InvalidAmountException` e `InsufficientFundsException` estendendo a classe base de exceções de negócio.
 - Consulta customizada *findResponseById* no `AccountRepository` para instanciar o DTO de resposta diretamente da base de dados.
 - Método *findReferenceById* no `UserService` para retornar o Proxy do Hibernate, otimizando relacionamentos entre domínios sem sobrecarregar o banco de dados.
 
 ### Changed
+- Todos os DTOs foram migrados de classes tradicionais para `record`s nativos do Java.
+- Atualizado para refletir a nova estrutura de *status* do usuário no momento de popular o banco.
+- Alteração no `schema.sql` e na entidade `User`, substituindo a coluna `active` (BOOLEAN) por `status` (VARCHAR/Enum).
 - Refatoração dos serviços `AccountService` e `UserService` para lançarem as exceções utilizando a nova assinatura baseada em classe.
 
 ### Removed
-- Classe base redundante `AgoraSystemException`.
+- Endpoint de *DELETE* no `UserController` em favor da exclusão Soft Delete.
+- O campo boolean `active` da entidade `User`.
+- Classe genérica redundante `AgoraSystemException`.
 
 ---
 

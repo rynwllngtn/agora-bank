@@ -1,11 +1,11 @@
-# Agora System (API)
+# Agora System Core (API)
 
 ![Java](https://img.shields.io/badge/Java-25-orange?style=for-the-badge&logo=java)
 ![Status](https://img.shields.io/badge/Status-EM%20EVOLUÇÂO-success?style=for-the-badge)
-![Version](https://img.shields.io/badge/version-v0.2.1-blue?style=for-the-badge)
+![Version](https://img.shields.io/badge/version-v0.3.2-blue?style=for-the-badge)
 
-O Agora System é um projeto de simulação bancária. Ele é um projeto para os meus estudos de programação e a intenção e evoluí-lo junto comigo.  
-O objetivo aqui não é criar um banco real, mas sim colocar em prática os conceitos e boas práticas de código à medida que os domino.
+O **Agora System Core** é o microsserviço principal do ecossistema Agora System, responsável por gerir as regras de negócio centrais, operações financeiras e o ciclo de vida dos usuários.  
+O objetivo deste módulo é construir um domínio robusto, aplicando fortemente os conceitos de **Domain-Driven Design (DDD)** e **Clean Code**.
 
 ---
 
@@ -14,45 +14,102 @@ O objetivo aqui não é criar um banco real, mas sim colocar em prática os conc
 
 ---
 
-## Aprendizado
+## Aprendizado e Arquitetura
 
-Nesta fase do projeto, o foco não foi a interface gráfica, mas sim a robustez do lado do servidor. O desenvolvimento desta versão ajudou a consolidar:
+O desenvolvimento desta versão marcou uma transição profunda na arquitetura do sistema, movendo a lógica de negócio dos *Services* para onde ela realmente pertence.
 
-- **Spring Boot & Injeção de Dependências:** Substituição de instanciações manuais pelo controle do Spring (`@Autowired`, `@Service`, `@RestController`).
-- **Spring Data JPA:** Eliminação de consultas SQL manuais e DAOs abstratos através da implementação de `Repositories`.
-- **Design de API RESTful:** Criação de *Controllers* para expor os dados da aplicação via rotas HTTP (ex: `GET /users`).
-- **Arquitetura em Camadas:** Divisão de responsabilidades entre *Controllers*, *Services*, *Repositories* e *Entities*.
-
----
-
-## Funcionalidades Atuais
-
-- **API REST:** Métodos para listagem e consulta de Usuários e Contas.
-- **Mapeamento Relacional:** Entidades `User` e `Account` mapeadas com herança `SINGLE_TABLE`.
-- **Database Seeding:** Preenchimento automático do banco de dados para testes utilizando `CommandLineRunner`.
+- **Domain-Driven Design (DDD) & Domínio Rico:** As entidades (`User`, `Account`) deixaram de ser meras caixas de dados (modelo anêmico) e passaram a encapsular os seus próprios comportamentos e validações internas (ex: `deposit()`, `withdraw()`, `deactivate()`).
+- **Gerenciamento de Estado (Soft Delete):** Eliminação de exclusões físicas (`DELETE`) na base de dados. Implementação de exclusão lógica baseada em máquina de estados (`ACTIVE`, `SUSPENDED`, `CLOSED`), garantindo integridade do histórico e auditoria.
+- **Modernização com Records:** Substituição massiva de classes tradicionais na camada de transferência de dados por `records` nativos do Java, garantindo DTOs imutáveis, seguros e de sintaxe limpa.
+- **Tratamento Global de Exceções:** Uso de `@ControllerAdvice` para capturar exceções específicas de negócio (como `InsufficientFundsException` e `InvalidAmountException`), blindando o domínio e padronizando as respostas de erro para o Front-end.
 
 ---
 
-## Como testar a conexão?
+## 📡 Endpoints da API
 
-Caso queira rodar o código e ver a comunicação com o banco na sua máquina:
+A API foi refatorada para utilizar operações de domínio específicas em vez de atualizações genéricas, refletindo intenções de negócio claras.
+
+### Usuários (`/users`)
+| Método | Rota | Descrição |
+|---|---|---|
+| `POST` | `/users` | Cria um novo usuário no sistema. |
+| `GET` | `/users/{id}` | Retorna os dados cadastrais e o status atual do usuário. |
+| `PATCH`| `/users/{id}/deactivate` | Executa a exclusão lógica (*Soft Delete*), alterando o status para `CLOSED`. |
+| `PATCH`| `/users/{id}/reactivate` | Restaura o acesso do usuário, alterando o status para `ACTIVE`. |
+
+### Contas (`/accounts`)
+| Método | Rota | Descrição |
+|---|---|---|
+| `POST` | `/accounts` | Abre uma nova conta vinculada a um usuário. |
+| `GET` | `/accounts/{id}` | Consulta o saldo e os dados da conta. |
+| `POST` | `/accounts/{id}/deposit` | Realiza um aporte financeiro. Exige regras de negócio (valores > 0). |
+| `POST` | `/accounts/{id}/withdraw` | Realiza um saque. Protegido contra saldo negativo (`InsufficientFundsException`). |
+
+---
+
+## Exemplos de Cargas
+
+Com a adoção dos `records`, os payloads de entrada e saída são enxutos e estritamente validados. Operações de alteração de estado não exigem envio do objeto completo.
+
+**Criação de Usuário (`POST /users`)**
+```json
+{
+  "cpd": "11122233344", 
+  "password": "12345678",
+  "fullName": "Ryan Wellington",
+  "birthDate": "07-01-2002"
+}
+```
+
+*(Nota: As rotas de `PATCH` em `/users` não requerem corpo na requisição, pois a intenção de negócio já está clara na própria URL).*
+
+**Criação de Conta (`POST /users`)**
+```json
+{
+  "holder": "2c8069aa-feb3-4e85-80b4-718459218c99", 
+  "balance": 0,
+  "transferLimit": 10000,
+  "transferLimitCap": 10000,
+  "accountType": "CHECKING"
+}
+```
+
+**Depósito em Conta (`POST /accounts/{id}/deposit`)**
+```json
+{
+  "amount": 250.00
+}
+```
+
+**Saque em Conta (`POST /accounts/{id}/withdraw`)**
+```json
+{
+  "amount": 50.00
+}
+```
+
+---
+
+## Como testar a aplicação localmente?
+
+Para rodar a API na sua máquina, você precisará do **Java 25** e de uma instância do **MySQL** (ou Docker) rodando localmente.
 
 1. Clone o repositório:
    ```bash
-   git clone https://github.com/rynwllngtn/agora-system-api.git
+   git clone [https://github.com/rynwllngtn/agora-system-core.git](https://github.com/rynwllngtn/agora-system-core.git)
    ```
-2. Renomeie o arquivo `application.example.properties` para `application.properties`.
+2. Renomeie o arquivo `application.example.properties` (ou `.yaml`) para `application.properties`.
 3. Insira as suas credenciais do MySQL local e o nome da base de dados no novo arquivo.
 4. Rode a aplicação usando o Maven Wrapper na raiz do projeto:
    ```bash
    ./mvnw spring-boot:run
    ```
    ou inicie a classe Main diretamente pela sua IDE (como no IntelliJ).
-5. Acesse `http://localhost:8080/users` no seu navegador ou Postman para ver o retorno em JSON da API.
+5. Acesse `http://localhost:8080/users` no seu Postman ou navegador para interagir com a API.
 
 ---
 
 ## Linha do Tempo
 
-Estou mantenho um registro detalhado de cada mudança que aplico na API do sistema.  
-Você pode acompanhar essa evolução no meu [CHANGELOG.md](./CHANGELOG.md).
+Mantenho um registro detalhado de cada mudança arquitetural e nova funcionalidade aplicada ao sistema principal.  
+Você pode acompanhar essa evolução técnica no meu [CHANGELOG.md](./CHANGELOG.md).
